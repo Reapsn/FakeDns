@@ -475,17 +475,17 @@ class RuleEngine2:
         try:
 
             s = None
+            addr = ('%s' % (args.chiandns), 53)
 
-            if args.overgfw:
-                if (gfwlistutil.isBlocked(query.domain)):
-                    if (args.socks5proxy):
-                        s = socks.socksocket(type=socket.SOCK_DGRAM)
-                        s.set_proxy(socks.SOCKS5,
-                                    args.socks5proxy.split(':')[0],
-                                    args.socks5proxy.split(':')[1])
+            if args.overgfw and gfwlistutil.isBlocked(query.domain) and len(args.socks5proxy) > 8:
+                s = socks.socksocket(type=socket.SOCK_DGRAM)
+                s.set_proxy(socks.SOCKS5,
+                            args.socks5proxy.split(':')[0],
+                            args.socks5proxy.split(':')[1])
+                addr = ('%s' % (args.dns), 53)
+
             s = (s == None if socket.socket(type=socket.SOCK_DGRAM) else s)
             s.settimeout(3.0)
-            addr = ('%s' % (args.dns), 53)
             s.sendto(query.data, addr)
             data = s.recv(1024)
             s.close()
@@ -542,6 +542,10 @@ if __name__ == '__main__':
     parser.add_argument(
         '--overgfw', dest='overgfw', action='store_true', default=False, required=False,
         help='Sets if should over gfw'
+    )
+    parser.add_argument(
+        '--chinadns', dest='chinadns', action='store_true', default='223.6.6.6', required=False,
+        help='Sets if accelerate for china'
     )
 
     args = parser.parse_args()
