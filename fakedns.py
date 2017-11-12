@@ -479,7 +479,7 @@ class RuleEngine2:
             if args.overgfw:
                 if (gfwlistutil.isBlocked(query.domain)):
                     if (args.socks5proxy):
-                        s = socks.socksocket()
+                        s = socks.socksocket(type=socket.SOCK_DGRAM)
                         s.set_proxy(socks.SOCKS5,
                                     args.socks5proxy.split(':')[0],
                                     args.socks5proxy.split(':')[1])
@@ -515,7 +515,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='FakeDNS - A Python DNS Server')
     parser.add_argument(
-        '-c', dest='path', action='store', required=True,
+        '-c', dest='path', action='store', default='dns.conf', required=False,
         help='Path to configuration file')
     parser.add_argument(
         '-i', dest='iface', action='store', default='0.0.0.0', required=False,
