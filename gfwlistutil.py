@@ -53,4 +53,3 @@ def newPacEngine():
         engine.enter()
         engine.eval(gfwListPac)
         return engine
-

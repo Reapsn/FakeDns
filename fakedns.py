@@ -475,7 +475,7 @@ class RuleEngine2:
         try:
 
             s = None
-            addr = ('%s' % (args.chiandns), 53)
+            addr = ('%s' % (args.chinadns), 53)
 
             if args.overgfw and gfwlistutil.isBlocked(query.domain) and len(args.socks5proxy) > 8:
                 s = socks.socksocket(type=socket.SOCK_DGRAM)
@@ -484,7 +484,7 @@ class RuleEngine2:
                             args.socks5proxy.split(':')[1])
                 addr = ('%s' % (args.dns), 53)
 
-            s = (s == None if socket.socket(type=socket.SOCK_DGRAM) else s)
+            s = (socket.socket(type=socket.SOCK_DGRAM) if s is None else s)
             s.settimeout(3.0)
             s.sendto(query.data, addr)
             data = s.recv(1024)
@@ -536,11 +536,11 @@ if __name__ == '__main__':
         help='Sets if FakeDNS should forward any non-matching requests'
     )
     parser.add_argument(
-        '--socks5proxy', dest='socks5proxy', action='store_true', default='127.0.0.1:1080', required=False,
+        '--socks5proxy', dest='socks5proxy', action='store_true', default='192.168.3.97:1080', required=False,
         help='Sets if FakeDNS should forward by socks5 proxy'
     )
     parser.add_argument(
-        '--overgfw', dest='overgfw', action='store_true', default=False, required=False,
+        '--overgfw', dest='overgfw', action='store_true', default=True, required=False,
         help='Sets if should over gfw'
     )
     parser.add_argument(
