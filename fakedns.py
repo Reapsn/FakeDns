@@ -11,6 +11,11 @@ import signal
 import argparse
 
 # inspired from DNSChef
+import socks
+
+import gfwlistutil
+
+
 class ThreadedUDPServer(SocketServer.ThreadingMixIn, SocketServer.UDPServer):
     def __init__(self, server_address, request_handler):
         self.address_family = socket.AF_INET
@@ -466,8 +471,19 @@ class RuleEngine2:
         if args.noforward:
             print ">> Don't Forward %s" % query.domain
             return NONEFOUND(query).make_packet()
+
         try:
-            s = socket.socket(type=socket.SOCK_DGRAM)
+
+            s = None
+
+            if args.overgfw:
+                if (gfwlistutil.isBlocked(query.domain)):
+                    if (args.socks5proxy):
+                        s = socks.socksocket()
+                        s.set_proxy(socks.SOCKS5,
+                                    args.socks5proxy.split(':')[0],
+                                    args.socks5proxy.split(':')[1])
+            s = (s == None if socket.socket(type=socket.SOCK_DGRAM) else s)
             s.settimeout(3.0)
             addr = ('%s' % (args.dns), 53)
             s.sendto(query.data, addr)
@@ -495,7 +511,6 @@ def signal_handler(signal, frame):
     print 'Exiting...'
     sys.exit(0)
 
-
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='FakeDNS - A Python DNS Server')
@@ -519,6 +534,14 @@ if __name__ == '__main__':
     parser.add_argument(
         '--noforward', dest='noforward', action='store_true', default=False, required=False,
         help='Sets if FakeDNS should forward any non-matching requests'
+    )
+    parser.add_argument(
+        '--socks5proxy', dest='socks5proxy', action='store_true', default='127.0.0.1:1080', required=False,
+        help='Sets if FakeDNS should forward by socks5 proxy'
+    )
+    parser.add_argument(
+        '--overgfw', dest='overgfw', action='store_true', default=False, required=False,
+        help='Sets if should over gfw'
     )
 
     args = parser.parse_args()
@@ -547,4 +570,4 @@ if __name__ == '__main__':
     # Tell python what happens if someone presses ctrl-C
     signal.signal(signal.SIGINT, signal_handler)
     server.serve_forever()
-    server_thread.join()
+    server.join()
