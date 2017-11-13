@@ -35,7 +35,7 @@ def isBlocked(domain):
 
 
 def getFunctionFindProxyForURL():
-    # global pacEngine
+    global pacEngine
 
     if needUpdate():
         updateGfwListPAC()
