@@ -479,12 +479,12 @@ class RuleEngine2:
 
             addr = ('%s' % (args.chinadns), 53)
 
-            if args.overgfw and gfwlistutil.isBlocked(query.domain) and len(args.socks5proxy) > 8:
-                s = socks.socksocket(type=socket.SOCK_DGRAM)
-                s.set_proxy(socks.SOCKS5,
-                            args.socks5proxy.split(':')[0],
-                            int(args.socks5proxy.split(':')[1]))
-                addr = ('%s' % (args.dns), 53)
+            # if args.overgfw and gfwlistutil.isBlocked(query.domain) and len(args.socks5proxy) > 8:
+            #     s = socks.socksocket(type=socket.SOCK_DGRAM)
+            #     s.set_proxy(socks.SOCKS5,
+            #                 args.socks5proxy.split(':')[0],
+            #                 int(args.socks5proxy.split(':')[1]))
+            #     addr = ('%s' % (args.dns), 53)
 
             s = (socket.socket(type=socket.SOCK_DGRAM) if s is None else s)
             s.settimeout(3.0)

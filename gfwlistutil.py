@@ -39,10 +39,10 @@ def getFunctionFindProxyForURL():
 
     if needUpdate():
         updateGfwListPAC()
-        # pacEngine = newPacEngine()
+        pacEngine = newPacEngine()
 
-    # if (pacEngine is None):
-    pacEngine = newPacEngine()
+    if (pacEngine is None):
+        pacEngine = newPacEngine()
 
     return pacEngine.locals.FindProxyForURL
 
@@ -50,9 +50,7 @@ def getFunctionFindProxyForURL():
 def newPacEngine():
     with open('gfwlist.pac', 'r') as f:
         gfwListPac = f.read()
-        print 'ok'
         engine = PyV8.JSContext()
-        print 'ok2'
         engine.enter()
         engine.eval(gfwListPac)
         return engine
