@@ -498,7 +498,10 @@ class RuleEngine2:
             print e
             return NONEFOUND(query).make_packet()
         finally:
-            s.close()
+            try:
+                s.close()
+            except Exception as e:
+                pass
 
 
 # Convenience method for threading.
