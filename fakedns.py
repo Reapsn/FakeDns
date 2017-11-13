@@ -540,7 +540,7 @@ if __name__ == '__main__':
         help='Sets if FakeDNS should forward any non-matching requests'
     )
     parser.add_argument(
-        '--socks5proxy', dest='socks5proxy', action='store_true', default='127.0.0.1:1080', required=False,
+        '--socks5proxy', dest='socks5proxy', action='store', default='127.0.0.1:1080', required=False,
         help='Sets if FakeDNS should forward by socks5 proxy'
     )
     parser.add_argument(
@@ -548,7 +548,7 @@ if __name__ == '__main__':
         help='Sets if should over gfw'
     )
     parser.add_argument(
-        '--chinadns', dest='chinadns', action='store_true', default='223.6.6.6', required=False,
+        '--chinadns', dest='chinadns', action='store', default='223.6.6.6', required=False,
         help='Sets if accelerate for china'
     )
 
