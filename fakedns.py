@@ -165,6 +165,7 @@ class DNSResponse(object):
         except (TypeError, ValueError):
             pass
 
+
 # All classes need to set type, length, and data fields of the DNS Response
 # Finished
 class A(DNSResponse):
@@ -251,7 +252,6 @@ class NONEFOUND(DNSResponse):
         self.rranswers = "\x00\x00"
         self.length = "\x00\x00"
         self.data = "\x00"
-        print ">> Built NONEFOUND response"
 
 
 class Rule (object):
@@ -472,16 +472,18 @@ class RuleEngine2:
             print ">> Don't Forward %s" % query.domain
             return NONEFOUND(query).make_packet()
 
+        s = None
         try:
 
-            s = None
+            print "Forward for %s " % query.domain
+
             addr = ('%s' % (args.chinadns), 53)
 
             if args.overgfw and gfwlistutil.isBlocked(query.domain) and len(args.socks5proxy) > 8:
                 s = socks.socksocket(type=socket.SOCK_DGRAM)
                 s.set_proxy(socks.SOCKS5,
                             args.socks5proxy.split(':')[0],
-                            args.socks5proxy.split(':')[1])
+                            int(args.socks5proxy.split(':')[1]))
                 addr = ('%s' % (args.dns), 53)
 
             s = (socket.socket(type=socket.SOCK_DGRAM) if s is None else s)
@@ -489,14 +491,15 @@ class RuleEngine2:
             s.sendto(query.data, addr)
             data = s.recv(1024)
             s.close()
-            print "Unmatched Request " + query.domain
             return data
-        except socket.error, e:
+        except socket.error as e:
             # We shouldn't wind up here but if we do, don't drop the request
             # send the client *something*
-            print ">> Error was handled by sending NONEFOUND"
+            print ">> Not Found %s by sending Forward" % query.domain
             print e
             return NONEFOUND(query).make_packet()
+        finally:
+            s.close()
 
 
 # Convenience method for threading.
@@ -504,7 +507,6 @@ def respond(data, addr, s):
     p = DNSQuery(data)
     response = rules.match(p, addr[0])
     s.sendto(response, addr)
-    return response
 
 # Capture Control-C and handle here
 def signal_handler(signal, frame):
@@ -563,6 +565,8 @@ if __name__ == '__main__':
     interface = args.iface
     port = args.port
 
+    server = None
+
     try:
         server = ThreadedUDPServer((interface, int(port)), UDPHandler)
     except socket.error:
@@ -574,4 +578,4 @@ if __name__ == '__main__':
     # Tell python what happens if someone presses ctrl-C
     signal.signal(signal.SIGINT, signal_handler)
     server.serve_forever()
-    server.join()
+
