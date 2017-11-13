@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import subprocess
 import time
 
 import PyV8
@@ -21,7 +22,7 @@ def needUpdate():
 
 def updateGfwListPAC():
     cmd = "genpac --pac-proxy 'SOCKS5 127.0.0.1:1080' -o gfwlist.pac"
-    os.subprocess.call(cmd, shell=True)
+    subprocess.call(cmd, shell=True)
 
 
 def isBlocked(domain):
