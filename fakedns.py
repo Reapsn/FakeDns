@@ -490,7 +490,6 @@ class RuleEngine2:
             s.settimeout(3.0)
             s.sendto(query.data, addr)
             data = s.recv(1024)
-            s.close()
             return data
         except socket.error as e:
             # We shouldn't wind up here but if we do, don't drop the request
