@@ -10,16 +10,16 @@ def needUpdate():
     global lastCheckTime
     global pacEngine
 
-    if (pacEngine is None):
-        return True
-
     now = time.time()
+
+    if (pacEngine is None):
+        lastCheckTime = now
+        return True
 
     if (now - lastCheckTime) / 3600 / 24 < 2:
         return False
 
     lastCheckTime = now
-
     return True
 
 
@@ -50,3 +50,4 @@ def newPacEngine(pac_path):
 if __name__ == '__main__':
     print 'www.baidu.com is blocked ? %s' % isBlocked('www.baidu.com', 'gfwlist.pac')
     print 'www.google.com is blocked ? %s' % isBlocked('www.google.com', 'gfwlist.pac')
+    print 'www.facebook.com is blocked ? %s' % isBlocked('www.facebook.com', 'gfwlist.pac')
