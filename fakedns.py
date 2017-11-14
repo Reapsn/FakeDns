@@ -479,12 +479,12 @@ class RuleEngine2:
 
             addr = ('%s' % (args.chinadns), 53)
 
-            # if args.overgfw and gfwlistutil.isBlocked(query.domain) and len(args.socks5proxy) > 8:
-            #     s = socks.socksocket(type=socket.SOCK_DGRAM)
-            #     s.set_proxy(socks.SOCKS5,
-            #                 args.socks5proxy.split(':')[0],
-            #                 int(args.socks5proxy.split(':')[1]))
-            #     addr = ('%s' % (args.dns), 53)
+            if len(args.socks5proxy) > 8 and gfwlistutil.isBlocked(query.domain, args.pac) :
+                s = socks.socksocket(type=socket.SOCK_DGRAM)
+                s.set_proxy(socks.SOCKS5,
+                            args.socks5proxy.split(':')[0],
+                            int(args.socks5proxy.split(':')[1]))
+                addr = ('%s' % (args.dns), 53)
 
             s = (socket.socket(type=socket.SOCK_DGRAM) if s is None else s)
             s.settimeout(3.0)
@@ -536,19 +536,19 @@ if __name__ == '__main__':
         help='IP address of the upstream dns server - default 8.8.8.8'
     )
     parser.add_argument(
+        '--chinadns', dest='chinadns', action='store', default='223.6.6.6', required=False,
+        help='Sets if accelerate for china - default 223.6.6.6'
+    )
+    parser.add_argument(
         '--noforward', dest='noforward', action='store_true', default=False, required=False,
         help='Sets if FakeDNS should forward any non-matching requests'
     )
     parser.add_argument(
         '--socks5proxy', dest='socks5proxy', action='store', default='127.0.0.1:1080', required=False,
-        help='Sets if FakeDNS should forward by socks5 proxy'
+        help='Sets if FakeDNS should forward by socks5 proxy, need support UDP protocol'
     )
     parser.add_argument(
-        '--overgfw', dest='overgfw', action='store_true', default=True, required=False,
-        help='Sets if should over gfw'
-    )
-    parser.add_argument(
-        '--chinadns', dest='chinadns', action='store', default='223.6.6.6', required=False,
+        '--pac', dest='pac', action='store', default='GFWLIST.pac', required=False,
         help='Sets if accelerate for china'
     )
 
